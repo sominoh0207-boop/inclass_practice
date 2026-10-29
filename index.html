@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eco-Recycling Project: Target Expressions</title>
+  <style>
+    :root {
+      --primary-color: #2e7d32;
+      --primary-light: #81c784;
+      --primary-dark: #1b5e20;
+      --accent-color: #fbc02d;
+      --bg-color: #f1f8e9;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-radius: 12px;
+      --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    #app-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .title-group h1 {
+      color: var(--primary-dark);
+      font-size: 1.5rem;
+    }
+
+    .title-group p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 10px;
+      height: 10px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Screen Styles */
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Reading / Intro Screen */
+    .story-box {
+      background-color: #f9f9f9;
+      border-left: 5px solid var(--primary-color);
+      padding: 18px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+
+    .highlight {
+      background-color: #fff9c4;
+      font-weight: bold;
+      color: var(--primary-dark);
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .expression-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .expression-card {
+      background: var(--bg-color);
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #c8e6c9;
+    }
+
+    .expression-card strong {
+      color: var(--primary-dark);
+      display: block;
+      font-size: 1.05rem;
+    }
+
+    .expression-card span {
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    /* Quiz / Activity Screen */
+    .question-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-dark);
+    }
+
+    .context-sentence {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    .blank {
+      display: inline-block;
+      min-width: 120px;
+      border-bottom: 2px dashed var(--primary-color);
+      text-align: center;
+      font-weight: bold;
+      color: var(--primary-dark);
+      padding: 0 5px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .btn-option {
+      background: #fff;
+      border: 2px solid #ddd;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .btn-option:hover {
+      border-color: var(--primary-light);
+      background-color: #f1f8e9;
+    }
+
+    .btn-option.correct {
+      background-color: #c8e6c9 !important;
+      border-color: var(--primary-color) !important;
+      color: var(--primary-dark);
+      font-weight: bold;
+    }
+
+    .btn-option.incorrect {
+      background-color: #ffcdd2 !important;
+      border-color: #e53935 !important;
+      color: #b71c1c;
+    }
+
+    .feedback {
+      min-height: 50px;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+      font-size: 0.95rem;
+    }
+
+    .feedback.correct {
+      display: block;
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    .feedback.incorrect {
+      display: block;
+      background-color: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    /* Buttons */
+    .btn-main {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .btn-main:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-main:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .nav-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    /* Summary Screen */
+    .results-card {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px auto;
+    }
+
+    .score-circle .number {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .score-circle .label {
+      font-size: 0.8rem;
+    }
+
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .review-table th, .review-table td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .review-table th {
+      background-color: #f5f5f5;
+    }
+
+    @media (max-width: 600px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      #app-container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <header>
+    <div class="title-group">
+      <h1>Recycling Project Phrasal Verbs</h1>
+      <p>Grade 8 English • 10-Min Booster</p>
+    </div>
+    <div id="stage-indicator" style="font-weight: bold; color: var(--primary-dark);">Stage 1/3</div>
+  </header>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- STAGE 1: Reading & Meaning Intro -->
+  <div id="stage-1" class="screen active">
+    <h2 class="question-title">1. Read the passage and learn the 6 target expressions:</h2>
+    <div class="story-box">
+      A group of students wanted to <span class="highlight">find out</span> how much waste their school produced each day. They decided to <span class="highlight">set up</span> recycling boxes for paper and plastic. They also asked classmates to <span class="highlight">sort out</span> their waste carefully. At first, many students did not <span class="highlight">pay attention to</span> the recycling signs, so the team <span class="highlight">came up with</span> a simple points game. With more students joining the project, the team was able to <span class="highlight">carry out</span> the plan for an entire month.
+    </div>
+
+    <div class="expression-list">
+      <div class="expression-card">
+        <strong>1. find out</strong>
+        <span>알아내다, 찾아내다 (discover/learn)</span>
+      </div>
+      <div class="expression-card">
+        <strong>2. set up</strong>
+        <span>설치하다, 준비하다 (establish/prepare)</span>
+      </div>
+      <div class="expression-card">
+        <strong>3. sort out</strong>
+        <span>분류하다, 정리하다 (separate/organize)</span>
+      </div>
+      <div class="expression-card">
+        <strong>4. pay attention to</strong>
+        <span>~에 주의/관심을 기울이다 (notice/listen to)</span>
+      </div>
+      <div class="expression-card">
+        <strong>5. come up with</strong>
+        <span>(아이디어를) 생각해내다 (think of/invent)</span>
+      </div>
+      <div class="expression-card">
+        <strong>6. carry out</strong>
+        <span>수행하다, 실행하다 (execute/complete)</span>
+      </div>
+    </div>
+
+    <div class="nav-actions">
+      <button class="btn-main" onclick="goToStage2()">Start Practice Quiz &rarr;</button>
+    </div>
+  </div>
+
+  <!-- STAGE 2: Practice Quiz (6 Questions) -->
+  <div id="stage-2" class="screen">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <span id="question-number" style="font-weight: bold; color: #555;">Question 1 of 6</span>
+    </div>
+    
+    <div class="context-sentence" id="quiz-sentence">
+      Loading sentence...
+    </div>
+
+    <div class="options-grid" id="options-container">
+      <!-- Options rendered by JS -->
+    </div>
+
+    <div class="feedback" id="feedback-box"></div>
+
+    <div class="nav-actions">
+      <button class="btn-main" id="btn-next" onclick="nextQuestion()" disabled>Next Question &rarr;</button>
+    </div>
+  </div>
+
+  <!-- STAGE 3: Completion & Review -->
+  <div id="stage-3" class="screen">
+    <div class="results-card">
+      <h2>Great Job! Project Completed! ♻️</h2>
+      <p style="margin-bottom: 20px; color: #666;">You've mastered the target expressions for the Recycling Project.</p>
+      
+      <div class="score-circle">
+        <span class="number" id="final-score">0/6</span>
+        <span class="label">Score</span>
+      </div>
+
+      <table class="review-table">
+        <thead>
+          <tr>
+            <th>Expression</th>
+            <th>Meaning (Korean)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>find out</td><td>알아내다, 밝혀내다</td></tr>
+          <tr><td>set up</td><td>설치하다, 마련하다</td></tr>
+          <tr><td>sort out</td><td>분류하다, 정리하다</td></tr>
+          <tr><td>pay attention to</td><td>~에 주의를 기울이다</td></tr>
+          <tr><td>come up with</td><td>(아이디어 등을) 생각해내다</td></tr>
+          <tr><td>carry out</td><td>실행하다, 수행하다</td></tr>
+        </tbody>
+      </table>
+
+      <button class="btn-main" onclick="restartApp()">Try Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const questions = [
+    {
+      sentence: "We need to <span class='blank'>???</span> how much plastic we throw away every day.",
+      correct: "find out",
+      options: ["find out", "set up", "sort out", "carry out"],
+      meaning: "알아내다",
+      explanation: "'find out' means to discover or learn information."
+    },
+    {
+      sentence: "The students decided to <span class='blank'>???</span> new recycling bins in the hallway.",
+      correct: "set up",
+      options: ["come up with", "set up", "pay attention to", "find out"],
+      meaning: "설치하다",
+      explanation: "'set up' means to assemble, build, or put something in place."
+    },
+    {
+      sentence: "Please <span class='blank'>???</span> the paper and plastic before throwing them away.",
+      correct: "sort out",
+      options: ["sort out", "carry out", "set up", "find out"],
+      meaning: "분류하다",
+      explanation: "'sort out' means to separate things into different categories."
+    },
+    {
+      sentence: "Many students did not <span class='blank'>???</span> the notice on the wall.",
+      correct: "pay attention to",
+      options: ["come up with", "sort out", "pay attention to", "carry out"],
+      meaning: "~에 주의를 기울이다",
+      explanation: "'pay attention to' means to listen, watch, or consider carefully."
+    },
+    {
+      sentence: "The team was able to <span class='blank'>???</span> a creative idea for a game.",
+      correct: "come up with",
+      options: ["find out", "set up", "come up with", "sort out"],
+      meaning: "생각해내다",
+      explanation: "'come up with' means to think of an idea or plan."
+    },
+    {
+      sentence: "They worked together to <span class='blank'>???</span> the recycling plan for an entire month.",
+      correct: "carry out",
+      options: ["pay attention to", "carry out", "come up with", "set up"],
+      meaning: "수행/실행하다",
+      explanation: "'carry out' means to perform or complete a task/plan."
+    }
+  ];
+
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let selectedOption = false;
+
+  function updateProgressBar(percentage) {
+    document.getElementById('progress-bar').style.width = percentage + '%';
+  }
+
+  function goToStage2() {
+    document.getElementById('stage-1').classList.remove('active');
+    document.getElementById('stage-2').classList.add('active');
+    document.getElementById('stage-indicator').innerText = "Stage 2/3: Practice";
+    updateProgressBar(20);
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    selectedOption = false;
+    const q = questions[currentQuestionIndex];
+    document.getElementById('question-number').innerText = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    document.getElementById('quiz-sentence').innerHTML = q.sentence.replace("???", "<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>");
+    
+    const optionsContainer = document.getElementById('options-container');
+    optionsContainer.innerHTML = '';
+    
+    const feedbackBox = document.getElementById('feedback-box');
+    feedbackBox.className = 'feedback';
+    feedbackBox.style.display = 'none';
+
+    document.getElementById('btn-next').disabled = true;
+
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-option';
+      btn.innerText = opt;
+      btn.onclick = () => selectOption(btn, opt, q);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function selectOption(btnElement, selectedOpt, currentQ) {
+    if (selectedOption) return;
+    selectedOption = true;
+
+    const options = document.querySelectorAll('.btn-option');
+    const feedbackBox = document.getElementById('feedback-box');
+    
+    if (selectedOpt === currentQ.correct) {
+      btnElement.classList.add('correct');
+      feedbackBox.innerText = `Correct! (${currentQ.meaning}) ${currentQ.explanation}`;
+      feedbackBox.className = 'feedback correct';
+      score++;
+    } else {
+      btnElement.classList.add('incorrect');
+      feedbackBox.innerText = `Incorrect. The correct answer is "${currentQ.correct}" (${currentQ.meaning}). ${currentQ.explanation}`;
+      feedbackBox.className = 'feedback incorrect';
+      
+      // Highlight correct answer
+      options.forEach(optBtn => {
+        if (optBtn.innerText === currentQ.correct) {
+          optBtn.classList.add('correct');
+        }
+      });
+    }
+
+    // Update sentence display with choice
+    document.getElementById('quiz-sentence').innerHTML = currentQ.sentence.replace("???", `<span class="highlight">${selectedOpt}</span>`);
+
+    document.getElementById('btn-next').disabled = false;
+  }
+
+  function nextQuestion() {
+    currentQuestionIndex++;
+    const progress = 20 + ((currentQuestionIndex / questions.length) * 70);
+    updateProgressBar(progress);
+
+    if (currentQuestionIndex < questions.length) {
+      loadQuestion();
+    } else {
+      showResults();
+    }
+  }
+
+  function showResults() {
+    document.getElementById('stage-2').classList.remove('active');
+    document.getElementById('stage-3').classList.add('active');
+    document.getElementById('stage-indicator').innerText = "Stage 3/3: Complete";
+    updateProgressBar(100);
+
+    document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+  }
+
+  function restartApp() {
+    currentQuestionIndex = 0;
+    score = 0;
+    document.getElementById('stage-3').classList.remove('active');
+    document.getElementById('stage-1').classList.add('active');
+    document.getElementById('stage-indicator').innerText = "Stage 1/3";
+    updateProgressBar(0);
+  }
+</script>
+
+</body>
+</html>
